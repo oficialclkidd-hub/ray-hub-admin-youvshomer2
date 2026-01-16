@@ -1,0 +1,316 @@
+-- RAY HUB PAINEL DE ADMIN | YOU VS HOMER
+-- Criado por banguela & equipe
+
+-- UI
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "ray hub painel de admin | you vs homer",
+    LoadingTitle = "ray hub",
+    LoadingSubtitle = "you vs homer",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "RayHub",
+        FileName = "AdminPanel"
+    }
+})
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+-- ========================
+-- VARIÁVEIS
+-- ========================
+local ESP_ENABLED = false
+local ESP_TABLE = {}
+local InfiniteJump = false
+local GodMode = false
+local FloatPart = nil
+local FloatConnection = nil
+
+-- ========================
+-- FUNÇÕES
+-- ========================
+
+-- ESP
+local function CreateESP(player)
+    if player == LocalPlayer then return end
+    if ESP_TABLE[player] then return end
+
+    local highlight = Instance.new("Highlight")
+    highlight.FillColor = Color3.fromRGB(255, 0, 0)
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+    highlight.FillTransparency = 0.5
+    highlight.Parent = player.Character or player.CharacterAdded:Wait()
+
+    ESP_TABLE[player] = highlight
+end
+
+local function RemoveESP()
+    for _, esp in pairs(ESP_TABLE) do
+        if esp then esp:Destroy() end
+    end
+    ESP_TABLE = {}
+end
+
+-- GOD MODE FORTE
+local function EnableGodMode()
+    GodMode = true
+    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local hum = char:FindFirstChildOfClass("Humanoid")
+
+    if hum then
+        hum.MaxHealth = math.huge
+        hum.Health = hum.MaxHealth
+
+        hum:GetPropertyChangedSignal("Health"):Connect(function()
+            if GodMode then
+                hum.Health = hum.MaxHealth
+            end
+        end)
+    end
+end
+
+-- ========================
+-- TAB KIT DE SOBREVIVENTE
+-- ========================
+local SurvivorTab = Window:CreateTab("Kit de sobrevivente", 4483362458)
+
+SurvivorTab:CreateButton({
+    Name = "ESP ALL",
+    Callback = function()
+        ESP_ENABLED = true
+        for _, p in pairs(Players:GetPlayers()) do
+            CreateESP(p)
+        end
+        Players.PlayerAdded:Connect(CreateESP)
+    end
+})
+
+SurvivorTab:CreateButton({
+    Name = "UNESP ALL",
+    Callback = function()
+        ESP_ENABLED = false
+        RemoveESP()
+    end
+})
+
+SurvivorTab:CreateButton({
+    Name = "Float",
+    Callback = function()
+        if FloatPart then return end
+        local char = LocalPlayer.Character
+        if not char then return end
+
+        FloatPart = Instance.new("Part")
+        FloatPart.Size = Vector3.new(6,1,6)
+        FloatPart.Anchored = true
+        FloatPart.Transparency = 0.3
+        FloatPart.Parent = workspace
+
+        FloatConnection = RunService.Heartbeat:Connect(function()
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                FloatPart.Position = char.HumanoidRootPart.Position - Vector3.new(0,3,0)
+                char.HumanoidRootPart.Velocity = Vector3.new(0,50,0)
+            end
+        end)
+    end
+})
+
+SurvivorTab:CreateButton({
+    Name = "UnFloat",
+    Callback = function()
+        if FloatConnection then FloatConnection:Disconnect() end
+        if FloatPart then FloatPart:Destroy() end
+        FloatConnection = nil
+        FloatPart = nil
+    end
+})
+
+-- ========================
+-- TAB KIT DE ASSASSINO
+-- ========================
+local KillerTab = Window:CreateTab("Kit de assassino", 4483362458)
+
+KillerTab:CreateButton({
+    Name = "Kill All",
+    Callback = function()
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer and p.Character then
+                local hum = p.Character:FindFirstChildOfClass("Humanoid")
+                if hum then hum.Health = 0 end
+            end
+        end
+    end
+})
+
+-- ========================
+-- TAB SOBREVIVENTE & ASSASSINO
+-- ========================
+local BothTab = Window:CreateTab("Kit de sobrevivente & assassino", 4483362458)
+
+BothTab:CreateToggle({
+    Name = "Infinite Jump",
+    CurrentValue = false,
+    Callback = function(v)
+        InfiniteJump = v
+    end
+})
+
+UIS.JumpRequest:Connect(function()
+    if InfiniteJump then
+        local char = LocalPlayer.Character
+        if char then
+            local hum = char:FindFirstChildOfClass("Humanoid")
+            if hum then hum:ChangeState("Jumping") end
+        end
+    end
+end)
+
+BothTab:CreateButton({
+    Name = "God Mode (Imortal)",
+    Callback = function()
+        EnableGodMode()
+    end
+})
+
+-- ========================
+-- TAB RECOMENDADO
+-- ========================
+local RecTab = Window:CreateTab("Recomendado", 4483362458)
+
+RecTab:CreateButton({ Name = "Kill All", Callback = KillerTab.Elements[1].Callback })
+RecTab:CreateButton({ Name = "ESP ALL", Callback = SurvivorTab.Elements[1].Callback })
+RecTab:CreateButton({ Name = "UNESP ALL", Callback = SurvivorTab.Elements[2].Callback })
+RecTab:CreateButton({ Name = "Float", Callback = SurvivorTab.Elements[3].Callback })
+RecTab:CreateButton({ Name = "UnFloat", Callback = SurvivorTab.Elements[4].Callback })
+RecTab:CreateButton({ Name = "God Mode", Callback = EnableGodMode })
+RecTab:CreateToggle({
+    Name = "Infinite Jump",
+    CurrentValue = false,
+    Callback = function(v) InfiniteJump = v end
+})
+
+-- ========================
+-- TAB DISCORD
+-- ========================
+local DiscordTab = Window:CreateTab("Discord", 4483362458)
+
+DiscordTab:CreateParagraph({
+    Title = "Servidor Oficial",
+    Content = "Entre no nosso servidor oficial do Discord:\nhttps://discord.gg/jAkMVGneNu"
+})
+
+DiscordTab:CreateButton({
+    Name = "Copiar link do Discord",
+    Callback = function()
+        setclipboard("https://discord.gg/jAkMVGneNu")
+    end
+})
+
+-- ========================
+-- TAB CRÉDITOS
+-- ========================
+local CreditsTab = Window:CreateTab("Créditos", 4483362458)
+
+CreditsTab:CreateParagraph({
+    Title = "Equipe",
+    Content = [[
+Dono: banguela
+Sub-dono: scripts073, denolk, Ofc_tubers93
+Administrador: _lipexxz
+Testers: bloxfruitspidam, gabrielguillherm93
+]]
+})
+
+-- ========================
+-- TAB ADMIN
+-- ========================
+local AdminTab = Window:CreateTab("Admin", 4483362458)
+
+local TargetName = ""
+
+AdminTab:CreateInput({
+    Name = "Nome do player",
+    PlaceholderText = "Digite o nome",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(text)
+        TargetName = text
+    end
+})
+
+local function GetTarget()
+    for _, p in pairs(Players:GetPlayers()) do
+        if string.lower(p.Name) == string.lower(TargetName) then
+            return p
+        end
+    end
+end
+
+AdminTab:CreateButton({
+    Name = "Kick",
+    Callback = function()
+        local t = GetTarget()
+        if t then
+            t:Kick("kitado pelo o ray hub | you vs homer 🔨")
+        end
+    end
+})
+
+AdminTab:CreateButton({
+    Name = "Jail",
+    Callback = function()
+        local t = GetTarget()
+        if t and t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
+            local box = Instance.new("Part")
+            box.Name = "IceJail"
+            box.Size = Vector3.new(6,8,6)
+            box.Anchored = true
+            box.Transparency = 0.3
+            box.Color = Color3.fromRGB(150, 255, 255)
+            box.Position = t.Character.HumanoidRootPart.Position
+            box.Parent = workspace
+        end
+    end
+})
+
+AdminTab:CreateButton({
+    Name = "UnJail",
+    Callback = function()
+        for _, p in pairs(workspace:GetChildren()) do
+            if p.Name == "IceJail" then
+                p:Destroy()
+            end
+        end
+    end
+})
+
+AdminTab:CreateButton({
+    Name = "Freeze",
+    Callback = function()
+        local t = GetTarget()
+        if t and t.Character then
+            for _, v in pairs(t.Character:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.Anchored = true
+                end
+            end
+        end
+    end
+})
+
+AdminTab:CreateButton({
+    Name = "UnFreeze",
+    Callback = function()
+        local t = GetTarget()
+        if t and t.Character then
+            for _, v in pairs(t.Character:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.Anchored = false
+                end
+            end
+        end
+    end
+})

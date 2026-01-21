@@ -17,14 +17,13 @@ local Window = Rayfield:CreateWindow({
    KeySystem = false,
 })
 
--- Customização Visual: Fundo Preto e Detalhes Vermelhos
+-- Visual: Bordas Vermelhas e Fundo Preto
 Rayfield.Flags["Theme"] = {
     ["TextColor"] = Color3.fromRGB(255, 255, 255),
     ["Background"] = Color3.fromRGB(0, 0, 0), 
     ["AccentColor"] = Color3.fromRGB(255, 0, 0),
 }
 
--- Tabs com Emojis
 local MainTab = Window:CreateTab("🏠 Principal", nil)
 local ESPTab = Window:CreateTab("👁️ ESP", nil)
 local DiscordTab = Window:CreateTab("📱 Discord", nil)
@@ -32,45 +31,18 @@ local DiscordTab = Window:CreateTab("📱 Discord", nil)
 --- SEÇÃO PRINCIPAL ---
 
 MainTab:CreateToggle({
-   Name = "🚀 FPS Booster (Correr +)",
-   CurrentValue = false,
-   Callback = function(Value)
-      if Value then
-          game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 26
-      else
-          game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-      end
-   end,
-})
-
-MainTab:CreateToggle({
-   Name = "⚡ Speed 1.3x",
-   CurrentValue = false,
-   Callback = function(Value)
-      if Value then
-          game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 21
-      else
-          game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-      end
-   end,
-})
-
-MainTab:CreateToggle({
-   Name = "🧱 Wall Hop (Plataforma)",
+   Name = "🧱 Wall Hop (Plataforma ao Pular)",
    CurrentValue = false,
    Callback = function(Value)
       _G.WallHop = Value
-      
-      -- Sistema que cria a plataforma ao pular
       game:GetService("UserInputService").JumpRequest:Connect(function()
           if _G.WallHop then
               local char = game.Players.LocalPlayer.Character
               local hrp = char:FindFirstChild("HumanoidRootPart")
-              
               if hrp then
                   local plate = Instance.new("Part")
                   plate.Size = Vector3.new(7, 1, 7)
-                  plate.Transparency = 1 -- Deixe 0.5 se quiser ver a plataforma
+                  plate.Transparency = 1 
                   plate.Anchored = true
                   plate.CanCollide = true
                   plate.Parent = workspace
@@ -79,6 +51,22 @@ MainTab:CreateToggle({
               end
           end
       end)
+   end,
+})
+
+MainTab:CreateToggle({
+   Name = "⚡ Speed 1.3x",
+   CurrentValue = false,
+   Callback = function(Value)
+      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 21 or 16
+   end,
+})
+
+MainTab:CreateToggle({
+   Name = "🚀 FPS Booster (Correr +)",
+   CurrentValue = false,
+   Callback = function(Value)
+      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 26 or 16
    end,
 })
 
@@ -100,13 +88,27 @@ MainTab:CreateToggle({
    CurrentValue = false,
    Callback = function(Value)
       if Value then
-          local player = game.Players.LocalPlayer
-          if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
-              player.Character:FindFirstChildOfClass("Humanoid").MaxHealth = math.huge
-              player.Character:FindFirstChildOfClass("Humanoid").Health = math.huge
-          end
+          local hum = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+          hum.MaxHealth = math.huge
+          hum.Health = math.huge
       else
-          Rayfield:Notify({Title = "Aviso", Content = "Dê reset para sair do God Mode.", Duration = 3})
+          Rayfield:Notify({Title = "Aviso", Content = "Dê reset para desativar!", Duration = 3})
+      end
+   end,
+})
+
+MainTab:CreateToggle({
+   Name = "👤 Invisível (Ficar Oculto)",
+   CurrentValue = false,
+   Callback = function(Value)
+      local char = game.Players.LocalPlayer.Character
+      for _, part in pairs(char:GetDescendants()) do
+          if part:IsA("BasePart") or part:IsA("Decal") then
+              part.Transparency = Value and 1 or 0
+          end
+      end
+      if char:FindFirstChild("Head") and char.Head:FindFirstChild("face") then
+          char.Head.face.Transparency = Value and 1 or 0
       end
    end,
 })
@@ -144,11 +146,7 @@ DiscordTab:CreateButton({
    Name = "🔗 Copiar Link do Discord",
    Callback = function()
       setclipboard("https://discord.gg/jAkMVGneNu")
-      Rayfield:Notify({
-         Title = "Copiado!",
-         Content = "Link do Ray Studios na área de transferência! 🔴",
-         Duration = 5,
-      })
+      Rayfield:Notify({Title = "Sucesso!", Content = "Link copiado! 🔴", Duration = 5})
    end,
 })
 

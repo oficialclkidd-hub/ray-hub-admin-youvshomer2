@@ -3,35 +3,37 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "Ray hub | you vs homer v2 | by ray studios",
    LoadingTitle = "Ray Studios 🔴",
-   LoadingSubtitle = "por Ray Studios",
+   LoadingSubtitle = "by Ray Studios",
    ConfigurationSaving = {
       Enabled = true,
       FolderName = "RayHubData",
       FileName = "RayHubConfig"
    },
    Discord = {
-      Enabled = false,
-      Invite = "jAkMVGneNu",
+      Invite = "7fRhUnr9M2", 
       RememberJoins = true
    },
    KeySystem = false,
 })
 
--- Visual: Bordas Vermelhas e Fundo Preto
+-- Visual: Tema Preto e Vermelho (Sem azul)
 Rayfield.Flags["Theme"] = {
     ["TextColor"] = Color3.fromRGB(255, 255, 255),
     ["Background"] = Color3.fromRGB(0, 0, 0), 
     ["AccentColor"] = Color3.fromRGB(255, 0, 0),
 }
 
+-- TABS
 local MainTab = Window:CreateTab("🏠 Principal", nil)
+local SpeedTab = Window:CreateTab("⚡ Velocidade", nil)
+local FakeTab = Window:CreateTab("🌀 Fake", nil)
 local ESPTab = Window:CreateTab("👁️ ESP", nil)
 local DiscordTab = Window:CreateTab("📱 Discord", nil)
 
 --- SEÇÃO PRINCIPAL ---
 
 MainTab:CreateToggle({
-   Name = "🧱 Wall Hop (Plataforma ao Pular)",
+   Name = "🧱 Wall Hop (Plataforma)",
    CurrentValue = false,
    Callback = function(Value)
       _G.WallHop = Value
@@ -41,12 +43,12 @@ MainTab:CreateToggle({
               local hrp = char:FindFirstChild("HumanoidRootPart")
               if hrp then
                   local plate = Instance.new("Part")
-                  plate.Size = Vector3.new(7, 1, 7)
+                  plate.Size = Vector3.new(8, 1, 8)
                   plate.Transparency = 1 
                   plate.Anchored = true
                   plate.CanCollide = true
                   plate.Parent = workspace
-                  plate.CFrame = hrp.CFrame * CFrame.new(0, -3.6, 0)
+                  plate.CFrame = hrp.CFrame * CFrame.new(0, -3.7, 0)
                   game.Debris:AddItem(plate, 0.1)
               end
           end
@@ -55,15 +57,7 @@ MainTab:CreateToggle({
 })
 
 MainTab:CreateToggle({
-   Name = "⚡ Speed 1.3x",
-   CurrentValue = false,
-   Callback = function(Value)
-      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 21 or 16
-   end,
-})
-
-MainTab:CreateToggle({
-   Name = "🚀 FPS Booster (Correr +)",
+   Name = "🚀 FPS Booster",
    CurrentValue = false,
    Callback = function(Value)
       game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 26 or 16
@@ -84,7 +78,7 @@ MainTab:CreateToggle({
 })
 
 MainTab:CreateToggle({
-   Name = "🛡️ God Mode (Imortal)",
+   Name = "🛡️ God Mode",
    CurrentValue = false,
    Callback = function(Value)
       if Value then
@@ -98,7 +92,7 @@ MainTab:CreateToggle({
 })
 
 MainTab:CreateToggle({
-   Name = "👤 Invisível (Ficar Oculto)",
+   Name = "👤 Invisível",
    CurrentValue = false,
    Callback = function(Value)
       local char = game.Players.LocalPlayer.Character
@@ -107,8 +101,68 @@ MainTab:CreateToggle({
               part.Transparency = Value and 1 or 0
           end
       end
-      if char:FindFirstChild("Head") and char.Head:FindFirstChild("face") then
-          char.Head.face.Transparency = Value and 1 or 0
+   end,
+})
+
+--- SEÇÃO VELOCIDADE ---
+
+SpeedTab:CreateToggle({
+   Name = "🏃 Speed 1.3x",
+   CurrentValue = false,
+   Callback = function(Value)
+      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 21 or 16
+   end,
+})
+
+SpeedTab:CreateInput({
+   Name = "✍️ Velocidade Custom (Até 1000)",
+   PlaceholderText = "Velocidade...",
+   RemoveTextAfterFocusLost = false,
+   Callback = function(Text)
+      local val = tonumber(Text)
+      if val then
+          if val > 1000 then val = 1000 end
+          game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = val
+      end
+   end,
+})
+
+--- SEÇÃO FAKE (RITUAL) ---
+
+FakeTab:CreateButton({
+   Name = "🔮 Fake Ritual",
+   Callback = function()
+      local char = game.Players.LocalPlayer.Character
+      local hrp = char:FindFirstChild("HumanoidRootPart")
+      
+      if hrp then
+          local plate = Instance.new("Part", workspace)
+          plate.Size = Vector3.new(10, 1, 10)
+          plate.Anchored = false 
+          plate.CanCollide = true
+          plate.CFrame = hrp.CFrame * CFrame.new(0, -3.5, 0)
+          plate.Color = Color3.fromRGB(255, 0, 0)
+          
+          local weld = Instance.new("WeldConstraint", plate)
+          weld.Part0 = plate
+          weld.Part1 = hrp
+
+          local bv = Instance.new("BodyVelocity", hrp)
+          bv.Velocity = Vector3.new(0, 70, 0) 
+          bv.MaxForce = Vector3.new(0, math.huge, 0)
+          
+          local bav = Instance.new("BodyAngularVelocity", hrp)
+          bav.AngularVelocity = Vector3.new(0, 50, 0) 
+          bav.MaxTorque = Vector3.new(0, math.huge, 0)
+          
+          task.wait(2)
+          bv:Destroy() 
+          plate:Destroy()
+          
+          task.wait(1)
+          bav:Destroy() 
+          
+          Rayfield:Notify({Title = "Fake Ritual", Content = "Finalizado! 🌀", Duration = 3})
       end
    end,
 })
@@ -116,7 +170,7 @@ MainTab:CreateToggle({
 --- SEÇÃO ESP ---
 
 ESPTab:CreateToggle({
-   Name = "🔴 ESP All (Ver Todos)",
+   Name = "🔴 ESP All",
    CurrentValue = false,
    Callback = function(Value)
       _G.ESPAll = Value
@@ -143,10 +197,9 @@ ESPTab:CreateToggle({
 --- SEÇÃO DISCORD ---
 
 DiscordTab:CreateButton({
-   Name = "🔗 Copiar Link do Discord",
+   Name = "🔗 Copiar Link",
    Callback = function()
-      setclipboard("https://discord.gg/jAkMVGneNu")
-      Rayfield:Notify({Title = "Sucesso!", Content = "Link copiado! 🔴", Duration = 5})
+      setclipboard("https://discord.gg/7fRhUnr9M2")
+      Rayfield:Notify({Title = "Copiado!", Content = "Link copiado! 🔴", Duration = 5})
    end,
 })
-

@@ -124,10 +124,10 @@ SpeedTab:Input({
     end
 })
 
---- SEÇÃO SCRIPTS ---
+--- SEÇÃO SCRIPTS (NOMES ATUALIZADOS) ---
 
 ScriptsTab:Button({
-    Title = "🔥 KDML Script You vs Homer",
+    Title = "🔥 kdml scripts | you vs homer",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/kedd063/KdmlScripts/refs/heads/main/YVSH-YouVsHomer"))()
     end
@@ -141,9 +141,16 @@ ScriptsTab:Button({
 })
 
 ScriptsTab:Button({
-    Title = "🐐 Lee hub",
+    Title = "🐐 Lee hub | you vs homer",
     Callback = function()
         loadstring(game:HttpGet("https://gist.githubusercontent.com/leehubgoatforevernarahubplagio/1e4a3a1bace0259c767b7b26656709bb/raw/bc11385c800453b783627a88590cd3f2747573fd/gistfile1.txt"))()
+    end
+})
+
+ScriptsTab:Button({
+    Title = "🧱 Wallhopp script",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ScpGuest666/Random-Roblox-script/refs/heads/main/Roblox%20WallHop%20V4%20script"))()
     end
 })
 

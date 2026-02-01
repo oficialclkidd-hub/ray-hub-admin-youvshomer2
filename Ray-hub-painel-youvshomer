@@ -19,6 +19,8 @@ local Window = WindUI:CreateWindow({
 -- TABS
 local MainTab = Window:Tab({ Title = "Principal", Icon = "user" }) 
 local SpeedTab = Window:Tab({ Title = "Velocidade", Icon = "zap" })
+local ScriptsTab = Window:Tab({ Title = "Scripts", Icon = "code" })
+local KeysTab = Window:Tab({ Title = "Keys", Icon = "key" })
 local FakeTab = Window:Tab({ Title = "Fake", Icon = "ghost" })
 local ESPTab = Window:Tab({ Title = "Visual/ESP", Icon = "eye" })
 local MiscTab = Window:Tab({ Title = "Discord e etc", Icon = "link" })
@@ -122,7 +124,40 @@ SpeedTab:Input({
     end
 })
 
---- SEÇÃO FAKE (Ritual com Giro Adicionado) ---
+--- SEÇÃO SCRIPTS ---
+
+ScriptsTab:Button({
+    Title = "🔥 KDML Script You vs Homer",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/kedd063/KdmlScripts/refs/heads/main/YVSH-YouVsHomer"))()
+    end
+})
+
+ScriptsTab:Button({
+    Title = "🌌 Sxz hub v3 | you vs homer",
+    Callback = function()
+        loadstring(game:HttpGet("https://monlua-protector.vercel.app/raw/7287aeb2ac047e4118257b75512a1f9d"))()
+    end
+})
+
+ScriptsTab:Button({
+    Title = "🐐 Lee hub",
+    Callback = function()
+        loadstring(game:HttpGet("https://gist.githubusercontent.com/leehubgoatforevernarahubplagio/1e4a3a1bace0259c767b7b26656709bb/raw/bc11385c800453b783627a88590cd3f2747573fd/gistfile1.txt"))()
+    end
+})
+
+--- SEÇÃO KEYS ---
+
+KeysTab:Button({
+    Title = "🔑 Pegar key grátis do Lee hub",
+    Callback = function()
+        setclipboard("leegang2000")
+        WindUI:Notify({Title = "Keys", Content = "Key 'leegang2000' copiada com sucesso!", Duration = 3})
+    end
+})
+
+--- SEÇÃO FAKE ---
 
 FakeTab:Button({
     Title = "🔮 Ativar Fake Ritual",
@@ -130,7 +165,6 @@ FakeTab:Button({
         local char = game.Players.LocalPlayer.Character
         local hrp = char:FindFirstChild("HumanoidRootPart")
         if hrp then
-            -- Plataforma Visual
             local plate = Instance.new("Part", workspace)
             plate.Size = Vector3.new(10, 0.5, 10)
             plate.CFrame = hrp.CFrame * CFrame.new(0, -3.5, 0)
@@ -141,26 +175,19 @@ FakeTab:Button({
             local weld = Instance.new("WeldConstraint", plate)
             weld.Part0 = plate; weld.Part1 = hrp
             
-            -- Velocidade de Subida
             local bv = Instance.new("BodyVelocity", hrp)
             bv.Velocity = Vector3.new(0, 60, 0)
             bv.MaxForce = Vector3.new(0, math.huge, 0)
             
-            -- Efeito de Giro (Rotação)
             local bav = Instance.new("BodyAngularVelocity", hrp)
             bav.AngularVelocity = Vector3.new(0, 60, 0) 
             bav.MaxTorque = Vector3.new(0, math.huge, 0)
             
-            WindUI:Notify({Title = "Ritual", Content = "Ascendendo...", Duration = 2})
-            
             task.wait(2.5)
             
-            -- Limpeza dos efeitos
             bv:Destroy()
             bav:Destroy()
             plate:Destroy()
-            
-            WindUI:Notify({Title = "Ritual", Content = "Finalizado!", Duration = 2})
         end
     end
 })
@@ -214,11 +241,4 @@ MiscTab:Button({
     Callback = function()
         game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
     end
-})
-
-WindUI:Notify({
-    Title = "Ray Hub",
-    Content = "Script atualizado e pronto!",
-    Duration = 5,
-    Image = "check"
 })

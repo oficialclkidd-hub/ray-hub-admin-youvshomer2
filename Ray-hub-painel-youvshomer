@@ -1,206 +1,224 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
-local Window = Rayfield:CreateWindow({
-   Name = "Ray hub | you vs homer v2 | by ray studios",
-   LoadingTitle = "Ray Studios 🔴",
-   LoadingSubtitle = "by Ray Studios",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = "RayHubData",
-      FileName = "RayHubConfig"
-   },
-   Discord = {
-      Invite = "7fRhUnr9M2", 
-      RememberJoins = true
-   },
-   KeySystem = false,
+local Window = WindUI:CreateWindow({
+    Title = "Ray hub | you vs homer v2",
+    Icon = "rbxthumb://type=Asset&id=75069275471141&w=420&h=420", 
+    Author = "by Fx_shura and denolk and scripts073",
+    Folder = "MyRayHub",
+    Size = UDim2.fromOffset(580, 460),
+    Transparent = true,
+    Theme = "Red", 
+    Accent = Color3.fromRGB(255, 0, 0), 
+    Resizable = true,
+    User = {
+        Enabled = true,
+        Anonymous = false,
+    },
 })
 
--- Visual: Tema Preto e Vermelho (Sem azul)
-Rayfield.Flags["Theme"] = {
-    ["TextColor"] = Color3.fromRGB(255, 255, 255),
-    ["Background"] = Color3.fromRGB(0, 0, 0), 
-    ["AccentColor"] = Color3.fromRGB(255, 0, 0),
-}
-
 -- TABS
-local MainTab = Window:CreateTab("🏠 Principal", nil)
-local SpeedTab = Window:CreateTab("⚡ Velocidade", nil)
-local FakeTab = Window:CreateTab("🌀 Fake", nil)
-local ESPTab = Window:CreateTab("👁️ ESP", nil)
-local DiscordTab = Window:CreateTab("📱 Discord", nil)
+local MainTab = Window:Tab({ Title = "Principal", Icon = "user" }) 
+local SpeedTab = Window:Tab({ Title = "Velocidade", Icon = "zap" })
+local FakeTab = Window:Tab({ Title = "Fake", Icon = "ghost" })
+local ESPTab = Window:Tab({ Title = "Visual/ESP", Icon = "eye" })
+local MiscTab = Window:Tab({ Title = "Discord e etc", Icon = "link" })
 
 --- SEÇÃO PRINCIPAL ---
 
-MainTab:CreateToggle({
-   Name = "🧱 Wall Hop (Plataforma)",
-   CurrentValue = false,
-   Callback = function(Value)
-      _G.WallHop = Value
-      game:GetService("UserInputService").JumpRequest:Connect(function()
-          if _G.WallHop then
-              local char = game.Players.LocalPlayer.Character
-              local hrp = char:FindFirstChild("HumanoidRootPart")
-              if hrp then
-                  local plate = Instance.new("Part")
-                  plate.Size = Vector3.new(8, 1, 8)
-                  plate.Transparency = 1 
-                  plate.Anchored = true
-                  plate.CanCollide = true
-                  plate.Parent = workspace
-                  plate.CFrame = hrp.CFrame * CFrame.new(0, -3.7, 0)
-                  game.Debris:AddItem(plate, 0.1)
-              end
-          end
-      end)
-   end,
+MainTab:Toggle({
+    Title = "🛡️ God Mode (Semi)",
+    Default = false,
+    Callback = function(Value)
+        local hum = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if Value and hum then
+            hum.MaxHealth = math.huge
+            hum.Health = math.huge
+        else
+            WindUI:Notify({Title = "Aviso", Content = "Dê reset para desativar!", Duration = 3})
+        end
+    end
 })
 
-MainTab:CreateToggle({
-   Name = "🚀 FPS Booster",
-   CurrentValue = false,
-   Callback = function(Value)
-      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 26 or 16
-   end,
+MainTab:Toggle({
+    Title = "👻 Invisível",
+    Default = false,
+    Callback = function(Value)
+        local char = game.Players.LocalPlayer.Character
+        for _, part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") or part:IsA("Decal") then
+                part.Transparency = Value and 1 or 0
+            end
+        end
+    end
 })
 
-MainTab:CreateToggle({
-   Name = "☁️ Infinite Jump",
-   CurrentValue = false,
-   Callback = function(Value)
-      _G.InfJump = Value
-      game:GetService("UserInputService").JumpRequest:Connect(function()
-          if _G.InfJump then
-              game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
-          end
-      end)
-   end,
+MainTab:Toggle({
+    Title = "🦘 Infinite Jump",
+    Default = false,
+    Callback = function(Value)
+        _G.InfJump = Value
+        game:GetService("UserInputService").JumpRequest:Connect(function()
+            if _G.InfJump then
+                game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+            end
+        end)
+    end
 })
 
-MainTab:CreateToggle({
-   Name = "🛡️ God Mode",
-   CurrentValue = false,
-   Callback = function(Value)
-      if Value then
-          local hum = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-          hum.MaxHealth = math.huge
-          hum.Health = math.huge
-      else
-          Rayfield:Notify({Title = "Aviso", Content = "Dê reset para desativar!", Duration = 3})
-      end
-   end,
-})
-
-MainTab:CreateToggle({
-   Name = "👤 Invisível",
-   CurrentValue = false,
-   Callback = function(Value)
-      local char = game.Players.LocalPlayer.Character
-      for _, part in pairs(char:GetDescendants()) do
-          if part:IsA("BasePart") or part:IsA("Decal") then
-              part.Transparency = Value and 1 or 0
-          end
-      end
-   end,
+MainTab:Toggle({
+    Title = "🧱 Wall Hop (Plataforma)",
+    Default = false,
+    Callback = function(Value)
+        _G.WallHop = Value
+        game:GetService("UserInputService").JumpRequest:Connect(function()
+            if _G.WallHop then
+                local char = game.Players.LocalPlayer.Character
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    local plate = Instance.new("Part")
+                    plate.Size = Vector3.new(8, 1, 8)
+                    plate.Transparency = 1 
+                    plate.Anchored = true
+                    plate.CanCollide = true
+                    plate.Parent = workspace
+                    plate.CFrame = hrp.CFrame * CFrame.new(0, -3.7, 0)
+                    game.Debris:AddItem(plate, 0.1)
+                end
+            end
+        end)
+    end
 })
 
 --- SEÇÃO VELOCIDADE ---
 
-SpeedTab:CreateToggle({
-   Name = "🏃 Speed 1.3x",
-   CurrentValue = false,
-   Callback = function(Value)
-      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 21 or 16
-   end,
+SpeedTab:Toggle({
+    Title = "🚀 FPS Booster (Speed 26)",
+    Default = false,
+    Callback = function(Value)
+        if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 26 or 16
+        end
+    end
 })
 
-SpeedTab:CreateInput({
-   Name = "✍️ Velocidade Custom (Até 1000)",
-   PlaceholderText = "Velocidade...",
-   RemoveTextAfterFocusLost = false,
-   Callback = function(Text)
-      local val = tonumber(Text)
-      if val then
-          if val > 1000 then val = 1000 end
-          game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = val
-      end
-   end,
+SpeedTab:Toggle({
+    Title = "🏃 Speed 1.3x (Speed 21)",
+    Default = false,
+    Callback = function(Value)
+        if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value and 21 or 16
+        end
+    end
 })
 
---- SEÇÃO FAKE (RITUAL) ---
+SpeedTab:Input({
+    Title = "✍️ Velocidade Customizada",
+    Placeholder = "Ex: 100",
+    Callback = function(Text)
+        local val = tonumber(Text)
+        if val then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = val
+        end
+    end
+})
 
-FakeTab:CreateButton({
-   Name = "🔮 Fake Ritual",
-   Callback = function()
-      local char = game.Players.LocalPlayer.Character
-      local hrp = char:FindFirstChild("HumanoidRootPart")
-      
-      if hrp then
-          local plate = Instance.new("Part", workspace)
-          plate.Size = Vector3.new(10, 1, 10)
-          plate.Anchored = false 
-          plate.CanCollide = true
-          plate.CFrame = hrp.CFrame * CFrame.new(0, -3.5, 0)
-          plate.Color = Color3.fromRGB(255, 0, 0)
-          
-          local weld = Instance.new("WeldConstraint", plate)
-          weld.Part0 = plate
-          weld.Part1 = hrp
+--- SEÇÃO FAKE (Ritual com Giro Adicionado) ---
 
-          local bv = Instance.new("BodyVelocity", hrp)
-          bv.Velocity = Vector3.new(0, 70, 0) 
-          bv.MaxForce = Vector3.new(0, math.huge, 0)
-          
-          local bav = Instance.new("BodyAngularVelocity", hrp)
-          bav.AngularVelocity = Vector3.new(0, 50, 0) 
-          bav.MaxTorque = Vector3.new(0, math.huge, 0)
-          
-          task.wait(2)
-          bv:Destroy() 
-          plate:Destroy()
-          
-          task.wait(1)
-          bav:Destroy() 
-          
-          Rayfield:Notify({Title = "Fake Ritual", Content = "Finalizado! 🌀", Duration = 3})
-      end
-   end,
+FakeTab:Button({
+    Title = "🔮 Ativar Fake Ritual",
+    Callback = function()
+        local char = game.Players.LocalPlayer.Character
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            -- Plataforma Visual
+            local plate = Instance.new("Part", workspace)
+            plate.Size = Vector3.new(10, 0.5, 10)
+            plate.CFrame = hrp.CFrame * CFrame.new(0, -3.5, 0)
+            plate.Color = Color3.fromRGB(255, 0, 0)
+            plate.Material = Enum.Material.Neon
+            plate.CanCollide = false
+            
+            local weld = Instance.new("WeldConstraint", plate)
+            weld.Part0 = plate; weld.Part1 = hrp
+            
+            -- Velocidade de Subida
+            local bv = Instance.new("BodyVelocity", hrp)
+            bv.Velocity = Vector3.new(0, 60, 0)
+            bv.MaxForce = Vector3.new(0, math.huge, 0)
+            
+            -- Efeito de Giro (Rotação)
+            local bav = Instance.new("BodyAngularVelocity", hrp)
+            bav.AngularVelocity = Vector3.new(0, 60, 0) 
+            bav.MaxTorque = Vector3.new(0, math.huge, 0)
+            
+            WindUI:Notify({Title = "Ritual", Content = "Ascendendo...", Duration = 2})
+            
+            task.wait(2.5)
+            
+            -- Limpeza dos efeitos
+            bv:Destroy()
+            bav:Destroy()
+            plate:Destroy()
+            
+            WindUI:Notify({Title = "Ritual", Content = "Finalizado!", Duration = 2})
+        end
+    end
 })
 
 --- SEÇÃO ESP ---
 
-ESPTab:CreateToggle({
-   Name = "🔴 ESP All",
-   CurrentValue = false,
-   Callback = function(Value)
-      _G.ESPAll = Value
-      while _G.ESPAll do
-          for _, v in pairs(game.Players:GetPlayers()) do
-              if v ~= game.Players.LocalPlayer and v.Character and not v.Character:FindFirstChild("Highlight") then
-                  local hi = Instance.new("Highlight", v.Character)
-                  hi.FillColor = Color3.fromRGB(255, 0, 0)
-                  hi.OutlineColor = Color3.fromRGB(255, 255, 255)
-              end
-          end
-          task.wait(1)
-          if not _G.ESPAll then
-              for _, v in pairs(game.Players:GetPlayers()) do
-                  if v.Character and v.Character:FindFirstChild("Highlight") then
-                      v.Character.Highlight:Destroy()
-                  end
-              end
-          end
-      end
-   end,
+ESPTab:Toggle({
+    Title = "👁️ ESP All (Highlight)",
+    Default = false,
+    Callback = function(Value)
+        _G.ESPAll = Value
+        if _G.ESPAll then
+            task.spawn(function()
+                while _G.ESPAll do
+                    for _, v in pairs(game.Players:GetPlayers()) do
+                        if v ~= game.Players.LocalPlayer and v.Character then
+                            if not v.Character:FindFirstChild("RayESP") then
+                                local hi = Instance.new("Highlight")
+                                hi.Name = "RayESP"
+                                hi.Parent = v.Character
+                                hi.FillColor = Color3.fromRGB(255, 0, 0)
+                                hi.OutlineColor = Color3.fromRGB(255, 255, 255)
+                            end
+                        end
+                    end
+                    task.wait(1)
+                end
+            end)
+        else
+            for _, v in pairs(game.Players:GetPlayers()) do
+                if v.Character and v.Character:FindFirstChild("RayESP") then
+                    v.Character.RayESP:Destroy()
+                end
+            end
+        end
+    end
 })
 
---- SEÇÃO DISCORD ---
+--- SEÇÃO MISC ---
 
-DiscordTab:CreateButton({
-   Name = "🔗 Copiar Link",
-   Callback = function()
-      setclipboard("https://discord.gg/7fRhUnr9M2")
-      Rayfield:Notify({Title = "Copiado!", Content = "Link copiado! 🔴", Duration = 5})
-   end,
+MiscTab:Button({
+    Title = "💬 Copiar Link Discord",
+    Callback = function()
+        setclipboard("https://discord.gg/7fRhUnr9M2")
+        WindUI:Notify({Title = "Sucesso", Content = "Link copiado!", Duration = 3})
+    end
 })
 
+MiscTab:Button({
+    Title = "🔄 Rejoin Game",
+    Callback = function()
+        game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
+    end
+})
+
+WindUI:Notify({
+    Title = "Ray Hub",
+    Content = "Script atualizado e pronto!",
+    Duration = 5,
+    Image = "check"
+})
